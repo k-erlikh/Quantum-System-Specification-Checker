@@ -7,7 +7,7 @@
 # 
 # [1]: https://ieeexplore-ieee-org.proxy.library.carleton.ca/document/10485497 "A Quantum Algorithm for System Specifications Verification"
 
-# In[105]:
+# In[37]:
 
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
@@ -41,25 +41,37 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 # |  1 |  1 |  1 |  0  |  0  | False |
 # 
 
-# In[ ]:
+# In[38]:
 
 
 #Table 1 representation
-consistent_system = {
+consistent_system_1 = {
     "terms" : ["0x1", "00x"], #x0 = 0, x1 = *, x2 = 1
     "var_count" : 3,
     "function_count" : 2
 }
 
+consistent_system_2 = {
+    "terms" : ["0x1x1", "x01x1", "00xxx","0x11x","xx1x1"], #x0 = 0, x1 = *, x2 = 1
+    "var_count" : 5,
+    "function_count" : 5
+}
+
 #Table 2 representation
-inconsistent_system = {
+inconsistent_system_1 = {
     "terms" : ["1x0", "00x"],
     "var_count" : 3,
     "function_count" : 2
 }
 
+inconsistent_system_2 = {
+    "terms": ["011", "00x"],
+    "var_count" : 3,
+    "function_count" : 2
+}
 
-# In[107]:
+
+# In[39]:
 
 
 def init__original_circuit(var_count: int, function_count: int) -> QuantumCircuit:
@@ -89,7 +101,7 @@ def init__original_circuit(var_count: int, function_count: int) -> QuantumCircui
     return qc_original
 
 
-# In[108]:
+# In[40]:
 
 
 def apply_oracles(qc_original: QuantumCircuit, terms: list, function_count: int) -> QuantumCircuit:
@@ -105,18 +117,24 @@ def apply_oracles(qc_original: QuantumCircuit, terms: list, function_count: int)
         reg_t = qc_original.qregs[i+1]
         term = terms[i]
 
-        c1, c2, c_p1, c_p2 = None, None, None, None #Control 1 value, control 2 value, control 1 position, control 2 position
+        c1, c2, c3, c_p1, c_p2, c_p3 = None, None, None, None, None, None #Control 1 value, control 2 value,control value 3, control 1 position, control 2 position, control 3 position
 
         for j in range(len(term)): #Determines position and value of the controls
             if term[j] == '0' or term[j] == '1':
                 if c1 == None:
                     c1 = int(term[j])
                     c_p1 = j
-                else:
+                elif c2 == None:
                     c2 = int(term[j])
                     c_p2 = j
-        print(f"c1: {c1}, c2: {c2}")
-        qc_original.ccx(reg_c[c_p1], reg_c[c_p2], reg_t[0], ctrl_state=f"{c2}{c1}") #Creates oracle based on the term control values, applies it to the function as a target
+                else:
+                    c3 = int(term[j])
+                    c_p3 = j
+        #print(f"c1: {c1}, c2: {c2}")
+        if c3 != None:
+            qc_original.mcx([reg_c[c_p1], reg_c[c_p2], reg_c[c_p3]], reg_t[0], ctrl_state=f"{c3}{c2}{c1}")
+        else:
+            qc_original.ccx(reg_c[c_p1], reg_c[c_p2], reg_t[0], ctrl_state=f"{c2}{c1}") #Creates oracle based on the term control values, applies it to the function as a target
 
     #qc_original.draw("mpl") 
 
@@ -124,7 +142,7 @@ def apply_oracles(qc_original: QuantumCircuit, terms: list, function_count: int)
 
 
 
-# In[109]:
+# In[41]:
 
 
 def apply_aux_hadamard(qc_original: QuantumCircuit, function_count: int) -> QuantumCircuit:
@@ -148,7 +166,7 @@ def apply_aux_hadamard(qc_original: QuantumCircuit, function_count: int) -> Quan
     return qc_original
 
 
-# In[110]:
+# In[42]:
 
 
 def mirror_circuit(qc_original: QuantumCircuit) -> QuantumCircuit:
@@ -211,7 +229,7 @@ def mirror_circuit(qc_original: QuantumCircuit) -> QuantumCircuit:
     return qc_final
 
 
-# In[111]:
+# In[43]:
 
 
 def measure_aux(qc_final: QuantumCircuit, function_count: int) -> QuantumCircuit:
@@ -243,7 +261,7 @@ def measure_aux(qc_final: QuantumCircuit, function_count: int) -> QuantumCircuit
     return qc_final
 
 
-# In[112]:
+# In[44]:
 
 
 def check_consistency(sim_prob: list) -> bool:
@@ -263,7 +281,7 @@ def check_consistency(sim_prob: list) -> bool:
         return False
 
 
-# In[113]:
+# In[45]:
 
 
 def construct_circuit(terms: list, var_count: int, func_count: int) -> QuantumCircuit:
@@ -276,11 +294,22 @@ def construct_circuit(terms: list, var_count: int, func_count: int) -> QuantumCi
     return final_circuit
 
 
-# In[114]:
+# In[46]:
 
 
-circuit = construct_circuit(consistent_system.get("terms"), consistent_system.get("var_count"),consistent_system.get("function_count"))
+circuit = construct_circuit(consistent_system_2.get("terms"), consistent_system_2.get("var_count"),consistent_system_2.get("function_count"))
 circuit.draw("mpl");
+
+#["0x1x1", "x01x1", "00xxx","0x11x","xx1x1"]
+
+
+# In[47]:
+
+
+circuit = construct_circuit(inconsistent_system_2.get("terms"), inconsistent_system_2.get("var_count"),inconsistent_system_2.get("function_count"))
+circuit.draw("mpl");
+
+#["011", "00x"]
 
 
 # References
