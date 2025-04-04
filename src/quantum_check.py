@@ -7,7 +7,7 @@
 # 
 # [1]: https://ieeexplore-ieee-org.proxy.library.carleton.ca/document/10485497 "A Quantum Algorithm for System Specifications Verification"
 
-# In[37]:
+# In[12]:
 
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
@@ -41,7 +41,7 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 # |  1 |  1 |  1 |  0  |  0  | False |
 # 
 
-# In[38]:
+# In[13]:
 
 
 #Table 1 representation
@@ -71,7 +71,7 @@ inconsistent_system_2 = {
 }
 
 
-# In[39]:
+# In[14]:
 
 
 def init__original_circuit(var_count: int, function_count: int) -> QuantumCircuit:
@@ -101,7 +101,7 @@ def init__original_circuit(var_count: int, function_count: int) -> QuantumCircui
     return qc_original
 
 
-# In[40]:
+# In[15]:
 
 
 def apply_oracles(qc_original: QuantumCircuit, terms: list, function_count: int) -> QuantumCircuit:
@@ -142,7 +142,7 @@ def apply_oracles(qc_original: QuantumCircuit, terms: list, function_count: int)
 
 
 
-# In[41]:
+# In[16]:
 
 
 def apply_aux_hadamard(qc_original: QuantumCircuit, function_count: int) -> QuantumCircuit:
@@ -166,7 +166,7 @@ def apply_aux_hadamard(qc_original: QuantumCircuit, function_count: int) -> Quan
     return qc_original
 
 
-# In[42]:
+# In[17]:
 
 
 def mirror_circuit(qc_original: QuantumCircuit) -> QuantumCircuit:
@@ -178,9 +178,7 @@ def mirror_circuit(qc_original: QuantumCircuit) -> QuantumCircuit:
     Creates circuit with original copy and mirrored copy. Register names of original circuit are the same, anything mirrored has the '_m' lable.
     """
 
-    qc_mirror_temp = qc_original.copy()
-    qc_mirror_temp = qc_mirror_temp.reverse_bits() #Temprary mirrored circuit
-
+    qc_mirror_temp = qc_original.copy().reverse_bits()
     qc_mirror = QuantumCircuit() #Actual mirrored circuit
 
     """
@@ -196,12 +194,9 @@ def mirror_circuit(qc_original: QuantumCircuit) -> QuantumCircuit:
             qubit_mapping[old_qubit] = new_qubit
 
     for gate in qc_mirror_temp.data: #add gates to newply mapped qubits
-        operation = gate.operation
-        qubits = gate.qubits
-        clbits = gate.clbits
+        operation, qubits, clbits = gate.operation, gate.qubits, gate.clbits
         new_qubits = [qubit_mapping[q] for q in qubits]
         qc_mirror.append(operation, new_qubits, clbits)
-
 
     qc_final = QuantumCircuit() #Final circuit with mirrored and original cirucit
 
@@ -210,18 +205,14 @@ def mirror_circuit(qc_original: QuantumCircuit) -> QuantumCircuit:
         qc_final.add_register(QuantumRegister(reg.size, name=reg.name))
 
     for gate in qc_original.data:
-        operation = gate.operation
-        qubits = gate.qubits
-        clbits = gate.clbits
+        operation, qubits, clbits = gate.operation, gate.qubits, gate.clbits
         qc_final.append(operation, qubits)
 
     for reg in qc_mirror.qregs:
         qc_final.add_register(QuantumRegister(reg.size, name=reg.name))
 
     for gate in qc_mirror.data:
-        operation = gate.operation
-        qubits = gate.qubits
-        clbits = gate.clbits
+        operation, qubits, clbits = gate.operation, gate.qubits, gate.clbits
         qc_final.append(operation, qubits)
 
     #qc_final.draw("mpl")
@@ -229,7 +220,7 @@ def mirror_circuit(qc_original: QuantumCircuit) -> QuantumCircuit:
     return qc_final
 
 
-# In[43]:
+# In[18]:
 
 
 def measure_aux(qc_final: QuantumCircuit, function_count: int) -> QuantumCircuit:
@@ -261,7 +252,7 @@ def measure_aux(qc_final: QuantumCircuit, function_count: int) -> QuantumCircuit
     return qc_final
 
 
-# In[44]:
+# In[19]:
 
 
 def check_consistency(sim_prob: list) -> bool:
@@ -281,7 +272,7 @@ def check_consistency(sim_prob: list) -> bool:
         return False
 
 
-# In[45]:
+# In[20]:
 
 
 def construct_circuit(terms: list, var_count: int, func_count: int) -> QuantumCircuit:
@@ -294,7 +285,7 @@ def construct_circuit(terms: list, var_count: int, func_count: int) -> QuantumCi
     return final_circuit
 
 
-# In[46]:
+# In[21]:
 
 
 circuit = construct_circuit(consistent_system_2.get("terms"), consistent_system_2.get("var_count"),consistent_system_2.get("function_count"))
@@ -303,7 +294,7 @@ circuit.draw("mpl");
 #["0x1x1", "x01x1", "00xxx","0x11x","xx1x1"]
 
 
-# In[47]:
+# In[22]:
 
 
 circuit = construct_circuit(inconsistent_system_2.get("terms"), inconsistent_system_2.get("var_count"),inconsistent_system_2.get("function_count"))
