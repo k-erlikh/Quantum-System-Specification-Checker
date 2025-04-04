@@ -1,5 +1,10 @@
 import itertools
 
+# Implementation of a classic algorithm designed to check system specification consistency [ [1] ]
+# 
+# [1]: https://ieeexplore-ieee-org.proxy.library.carleton.ca/document/10485497 "A Quantum Algorithm for System Specifications Verification"
+
+
 # Table 1. Truth table example for a consistent system with 3 variables and 2 function oracles (F1 = !X0 X2, F2 = !X0 !X1)
 # | X0 | X1 | X2 | F1  | F2  | Bool |
 # |----|----|----|----|----|----|
@@ -67,9 +72,10 @@ def check_specification_consistency(n, terms):
 
 
 # Table 1 (consistent system)
-print("Table 1 (consistent):", 
-        check_specification_consistency(3, ["0x1", "00x"]))  
+print("Table 1 (consistent):", check_specification_consistency(3, ["0x1", "00x"]))  
+print("Table 1 (consistent):", check_specification_consistency(5, ["0x1x1", "x01x1", "00xxx","0x11x","xx1x1"]))  
 
 # Table 2 (inconsistent system)
-print("Table 2 (inconsistent):",
-        check_specification_consistency(3, ["1x0", "00x"])) 
+print("Table 2 (inconsistent):", check_specification_consistency(3, ["1x0", "00x"])) 
+print("Table 2 (inconsistent):", check_specification_consistency(3, ["011", "00x"])) 
+
