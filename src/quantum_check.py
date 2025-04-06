@@ -252,7 +252,7 @@ def measure_aux(qc_final: QuantumCircuit, function_count: int) -> QuantumCircuit
     return qc_final
 
 
-# In[19]:
+# In[ ]:
 
 
 def check_consistency(sim_prob: list) -> bool:
@@ -264,7 +264,7 @@ def check_consistency(sim_prob: list) -> bool:
     Measurment of the probabilities of the system to determine of the system specification configurations are compliant.
     """
     C = sqrt(2*(sim_prob[0]+sim_prob[1])) #Equation as provided in the study [1]
-    if C>0:
+    if C>0 and sim_prob[0] != 0 and sim_prob[1]!=0:
         print(f"The system is consistent. C={C}")
         return True
     else:
