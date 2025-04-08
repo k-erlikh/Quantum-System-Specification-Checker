@@ -13,8 +13,8 @@ Quantum Solution:
 - quantum_check.py
 - quantum_check.ipyn
 
-Examples:
-
-examples.ipyn contains general examples of running both classical and quantum solutions
-
 Testing:
+
+- test_time-complexity.ipynb
+- test_theoretical_values.ipynb
+- test_experimental_values.ipynb
