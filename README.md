@@ -95,7 +95,7 @@ Otherwise, the system is inconsistent.
 
 ### Quantum Circuit Construction (Generalized Algorithm)
 
-Following the proposed algorithm by the authors \cite{10485497}, the quantum circuit is constructed as follows:
+Following the proposed algorithm by the authors [1], the quantum circuit is constructed as follows:
 
 1. **Initialize register**
 
